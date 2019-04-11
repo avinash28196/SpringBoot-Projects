@@ -1,0 +1,44 @@
+CREATE TABLE POSTS
+(
+	ID VARCHAR(55),
+	CREATED_AT DATETIME,
+	UPDATED_AT DATETIME,
+	CONTENT VARCHAR2, 	
+	DESCRIPTION VARCHAR2, 	
+	TITLE VARCHAR2, 	 
+)
+AS
+SELECT * 
+FROM CSVREAD('C:\Users\arames2\Desktop\posts.csv');
+
+CREATE TABLE ARTICLES
+(
+  articleID VARCHAR(55), 
+  ARTICLEWORDCOUNT INT(55),
+  headline VARCHAR(1555),
+  Category VARCHAR(100),
+  PUBDATE DATETIME,
+  snippet VARCHAR(1555),
+  webURL VARCHAR(1555)
+)
+AS
+SELECT * 
+FROM CSVREAD('C:\Users\arames2\Desktop\articles.csv');
+
+
+CREATE TABLE COMMENTS
+(
+	commentID VARCHAR(55),
+	CREATED_AT DATETIME,
+	UPDATED_AT DATETIME,		
+	commentBody VARCHAR2, 	
+	userDisplayName VARCHAR(55), 
+	userID INT(55),
+	USERLOCATION VARCHAR(55), 
+	articleID VARCHAR(55)
+);
+
+
+
+SELECT * 
+FROM CSVREAD('C:\Users\arames2\Desktop\comments.csv');s
