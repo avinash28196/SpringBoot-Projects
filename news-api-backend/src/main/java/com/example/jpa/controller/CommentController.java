@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 @RestController
@@ -26,11 +28,16 @@ public class CommentController {
     @Autowired
     private ArticleRepository articleRepository;
     
-//    @GetMapping("/api/article/{articleId}/comments")
-//    public Page<Comment> getAllCommentsByPostId(@PathVariable (value = "articleId") Long articleId,
-//                                             	Pageable pageable) {
-//      return commentRepository.findByArticleid(articleId, pageable);
-//    }
+    @GetMapping("/api/comment/{commentsId}")
+    public Optional<Comment> getCommentsByCommentsId(@PathVariable (value = "commentsId") Long commentsId){
+    	return commentRepository.findById(commentsId);
+    }
+    
+    @GetMapping("/api/article/{articleId}/comments")
+    public Page<Comment> getAllCommentsByArticleId(@PathVariable (value = "articleId") Long articleId,
+    		Pageable pageable) {
+      return commentRepository.findByArticle_Id(articleId,pageable);
+    }
 
 //    @GetMapping("/posts/{postId}/comments")
 //    public Page<Comment> getAllCommentsByPostId(@PathVariable (value = "postId") Long postId,
@@ -38,6 +45,15 @@ public class CommentController {
 //        return commentRepository.findByPostId(postId, pageable);
 //    }
 
+	  @PostMapping("/posts/{articleId}/comments")
+	  public Comment createComment(@PathVariable (value = "articleId") Long articleId,
+	                               @Valid @RequestBody Comment comment) {
+	      return articleRepository.findById(articleId).map(article -> {
+	          comment.setArticle(article); 
+	          return commentRepository.save(comment);
+	      }).orElseThrow(() -> new ResourceNotFoundException("PostId " + articleId + " not found"));
+	  }
+	  
 //    @PostMapping("/posts/{postId}/comments")
 //    public Comment createComment(@PathVariable (value = "postId") Long postId,
 //                                 @Valid @RequestBody Comment comment) {

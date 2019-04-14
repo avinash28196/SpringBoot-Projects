@@ -1,5 +1,7 @@
 package com.example.jpa.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +35,17 @@ public class ArticleController {
 	    return articleRepository.findAll(pageable);
 	 }
 	 
+	 @GetMapping("/api/category/{category}")
+	 public Page<Article> getAllByCategory(@PathVariable String category,Pageable pageable){
+		 return articleRepository.findByCategory(category, pageable);
+	 }
+	 
 	 @PostMapping("/api/article")
 	 public Article createArticle(@Valid @RequestBody Article article) {
 	     return articleRepository.save(article);
 	 }
+	 
+	 
 	 
 	 @DeleteMapping("/api/articles/{articleId}")
 	 public ResponseEntity<?> deleteArticle(@PathVariable Long articleId){
@@ -45,7 +54,7 @@ public class ArticleController {
 				articleRepository.delete(article);
 				return ResponseEntity.ok().build();
 				})
-			.orElseThrow(() -> new ResourceNotFoundException("ArticleId  " + articleId + " not found"));
+		.orElseThrow(() -> new ResourceNotFoundException("ArticleId  " + articleId + " not found"));
 	 }
 	 
 	 @PutMapping("/api/article/{articleId}")
@@ -57,7 +66,7 @@ public class ArticleController {
 	        		article.setCategory(articleUpdate.getCategory());
 	        		return articleRepository.save(article);
 	        	})
-	        	.orElseThrow(() -> new ResourceNotFoundException("ArticleId " + articleId + " not found"));
+	      .orElseThrow(() -> new ResourceNotFoundException("ArticleId " + articleId + " not found"));
 	  }
 			
 		 
