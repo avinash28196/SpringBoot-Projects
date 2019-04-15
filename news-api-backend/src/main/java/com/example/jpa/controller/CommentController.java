@@ -29,39 +29,23 @@ public class CommentController {
     private ArticleRepository articleRepository;
     
     @GetMapping("/api/comment/{commentsId}")
-    public Optional<Comment> getCommentsByCommentsId(@PathVariable (value = "commentsId") Long commentsId){
-    	return commentRepository.findById(commentsId);
+    public Optional<Comment> getCommentsByCommentId(@PathVariable (value = "commentId") Long commentId){
+    	return commentRepository.findById(commentId);
     }
     
     @GetMapping("/api/article/{articleId}/comments")
-    public Page<Comment> getAllCommentsByArticleId(@PathVariable (value = "articleId") Long articleId,
-    		Pageable pageable) {
+    public Page<Comment> getAllCommentsByArticleId(@PathVariable (value = "articleId") Long articleId,Pageable pageable) {
       return commentRepository.findByArticle_Id(articleId,pageable);
     }
 
-//    @GetMapping("/posts/{postId}/comments")
-//    public Page<Comment> getAllCommentsByPostId(@PathVariable (value = "postId") Long postId,
-//                                                Pageable pageable) {
-//        return commentRepository.findByPostId(postId, pageable);
-//    }
-
-	  @PostMapping("/posts/{articleId}/comments")
-	  public Comment createComment(@PathVariable (value = "articleId") Long articleId,
-	                               @Valid @RequestBody Comment comment) {
+	  @PostMapping("/article/{articleId}/comments")
+	  public Comment createComment(@PathVariable (value = "articleId") Long articleId, @Valid @RequestBody Comment comment) {
 	      return articleRepository.findById(articleId).map(article -> {
 	          comment.setArticle(article); 
 	          return commentRepository.save(comment);
-	      }).orElseThrow(() -> new ResourceNotFoundException("PostId " + articleId + " not found"));
+	      }).orElseThrow(() -> new ResourceNotFoundException("ArticleId " + articleId + " not found"));
 	  }
-	  
-//    @PostMapping("/posts/{postId}/comments")
-//    public Comment createComment(@PathVariable (value = "postId") Long postId,
-//                                 @Valid @RequestBody Comment comment) {
-//        return postRepository.findById(postId).map(post -> {
-//            comment.setPost(post);
-//            return commentRepository.save(comment);
-//        }).orElseThrow(() -> new ResourceNotFoundException("PostId " + postId + " not found"));
-//    }
+
 //
 //    @PutMapping("/posts/{postId}/comments/{commentId}")
 //    public Comment updateComment(@PathVariable (value = "postId") Long postId,
@@ -76,13 +60,29 @@ public class CommentController {
 //            return commentRepository.save(comment);
 //        }).orElseThrow(() -> new ResourceNotFoundException("CommentId " + commentId + "not found"));
 //    }
-//
-//    @DeleteMapping("/posts/{postId}/comments/{commentId}")
-//    public ResponseEntity<?> deleteComment(@PathVariable (value = "postId") Long postId,
-//                              @PathVariable (value = "commentId") Long commentId) {
-//        return commentRepository.findByIdAndPostId(commentId, postId).map(comment -> {
-//            commentRepository.delete(comment);
-//            return ResponseEntity.ok().build();
-//        }).orElseThrow(() -> new ResourceNotFoundException("Comment not found with id " + commentId + " and postId " + postId));
-//    }
+
+	
+	    @PutMapping("/article/{articleId}/comments/{commentId}")
+	    public Comment updateComment(@PathVariable (value = "articleId") Long articleId,
+	                                 @PathVariable (value = "commentId") Long commentId,
+	                                 @Valid @RequestBody Comment commentRequest) {
+	        if(!articleRepository.existsById(articleId)) {
+	            throw new ResourceNotFoundException("articleId " + articleId + " not found");
+	        }
+	
+	        return commentRepository.findById(commentId).map(comment -> {
+	            comment.setText(commentRequest.getText());
+	            return commentRepository.save(comment);
+	        }).orElseThrow(() -> new ResourceNotFoundException("CommentId " + commentId + "not found"));
+	    }
+
+	    @DeleteMapping("/article/{articleId}/comments/{commentId}")
+	    public ResponseEntity<?> deleteComment(@PathVariable (value = "articleId") Long articleId,
+	                              @PathVariable (value = "commentId") Long commentId) {
+	        return commentRepository.findByIdAndArticle_Id(commentId, articleId).map(comment -> {
+	            commentRepository.delete(comment);
+	            return ResponseEntity.ok().build();
+	        }).orElseThrow(() -> new ResourceNotFoundException("Comment not found with id " + commentId + " and articleId " + articleId));
+	    }
+	  
 }
